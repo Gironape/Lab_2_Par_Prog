@@ -87,6 +87,13 @@ std::vector<std::vector<int>> multiplyMatricesFromFile(const std::string& file1,
 
 
 
+void calculateConfidenceInterval(const double& mean, const double& stdev, const int& numSamples) {
+    double z = 1.96;
+    double marginOfError = z * stdev / sqrt(numSamples);
+
+    std::cout << "Confidence Interval for the Execution Time: [" << mean - marginOfError << ", " << mean + marginOfError << "]" << std::endl;
+}
+
 int main() {
     const int rows1 = 10;
     const int cols1 = 10;
@@ -103,9 +110,15 @@ int main() {
     result = multiplyMatricesFromFile("matrix1.txt", "matrix2.txt");
     auto end = std::chrono::high_resolution_clock::now();
     writeMatrix(result, "result_matrix.txt");
+
     std::chrono::duration<double> duration = end - start;
+    double meanTime = duration.count();
+
+    double stdevTime = 0; 
+
+    calculateConfidenceInterval(meanTime, stdevTime, 1);
 
     std::cout << "The scope of the task: " << rows1 * cols1 + rows2 * cols2 << " elements." << std::endl;
-    std::cout << "Execution time: " << duration.count() << " seconds." << std::endl;
+    std::cout << "Execution time: " << meanTime << " seconds." << std::endl;
     return 0;
 }
