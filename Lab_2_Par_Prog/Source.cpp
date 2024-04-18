@@ -5,6 +5,8 @@
 #include <random>
 #include <stdexcept>
 #include <omp.h>
+//#define OMP_DISPLAY_ENV
+//#define CMAKE_CXX_FLAGS
 
 std::vector<std::vector<int>> generateRandomMatrix(int rows, int cols) {
     std::vector<std::vector<int>> matrix(rows, std::vector<int>(cols));
@@ -12,7 +14,6 @@ std::vector<std::vector<int>> generateRandomMatrix(int rows, int cols) {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(1, 100);
-
 #pragma omp parallel for
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < cols; ++j) {
@@ -72,8 +73,7 @@ std::vector<std::vector<int>> multiplyMatricesFromFile(const std::string& file1,
     }
 
     std::vector<std::vector<int>> result(rowsA, std::vector<int>(colsB, 0));
-
-#pragma omp parallel for collapse(2)
+#pragma omp parallel for num_threads(12)
     for (int i = 0; i < rowsA; ++i) {
         for (int j = 0; j < colsB; ++j) {
             for (int k = 0; k < colsA; ++k) {
@@ -95,10 +95,10 @@ void calculateConfidenceInterval(const double& mean, const double& stdev, const 
 }
 
 int main() {
-    const int rows1 = 10;
-    const int cols1 = 10;
-    const int rows2 = 10;
-    const int cols2 = 10;
+    const int rows1 = 2000;
+    const int cols1 = 2000;
+    const int rows2 = 2000;
+    const int cols2 = 2000;
     std::vector<std::vector<int>> matrix1 = generateRandomMatrix(rows1, cols1);
     std::vector<std::vector<int>> matrix2 = generateRandomMatrix(rows2, cols2);
 
@@ -114,7 +114,7 @@ int main() {
     std::chrono::duration<double> duration = end - start;
     double meanTime = duration.count();
 
-    double stdevTime = 0; 
+    double stdevTime = 0;
 
     calculateConfidenceInterval(meanTime, stdevTime, 1);
 
